@@ -58,7 +58,8 @@ public class Updater extends BaseUpdater implements Callable<Instance>, Progress
         this.launcher = launcher;
         this.instance = instance;
 
-        librarySources.add(launcher.propUrl("librariesSource"));
+        for(String lurl: launcher.prop("librariesSource").split(","))
+            librarySources.add(HttpRequest.url(lurl));
         assetsSources.add(launcher.propUrl("assetsSource"));
     }
 

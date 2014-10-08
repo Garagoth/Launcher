@@ -40,7 +40,7 @@ public class HttpDownloader implements Downloader {
     private final File tempDir;
     @Getter @Setter private int threadCount = 6;
     @Getter @Setter private int retryDelay = 2000;
-    @Getter @Setter private int tryCount = 3;
+    @Getter @Setter private int tryCount = 2;
 
     private List<HttpDownloadJob> queue = new ArrayList<HttpDownloadJob>();
     private final Set<String> usedKeys = new HashSet<String>();
@@ -235,17 +235,10 @@ public class HttpDownloader implements Downloader {
 
         private void download(File file) throws IOException, InterruptedException {
             int trial = 0;
-            boolean first = true;
             IOException lastException = null;
 
             do {
                 for (URL url : urls) {
-                    // Sleep between each trial
-                    if (!first) {
-                        Thread.sleep((long) (retryDelay / 2 + (random.nextDouble() * retryDelay)));
-                    }
-                    first = false;
-
                     try {
                         request = HttpRequest.get(url);
                         request.execute().expectResponseCode(200).saveContent(file);
@@ -255,6 +248,8 @@ public class HttpDownloader implements Downloader {
                         log.log(Level.WARNING, "Failed to download " + url, e);
                     }
                 }
+                // Sleep between each trial
+                Thread.sleep((long) (retryDelay / 2 + (random.nextDouble() * retryDelay)));
             } while (++trial < tryCount);
 
             throw new IOException("Failed to download from " + urls, lastException);

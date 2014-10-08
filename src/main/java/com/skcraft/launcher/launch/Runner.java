@@ -222,19 +222,19 @@ public class Runner implements Callable<Process>, ProgressObservable {
         int permGen = config.getPermGen();
 
         if (minMemory <= 0) {
-            minMemory = 1024;
+            minMemory = 2048;
         }
 
         if (maxMemory <= 0) {
-            maxMemory = 1024;
+            maxMemory = 2048;
         }
 
         if (permGen <= 0) {
-            permGen = 128;
+            permGen = 512;
         }
 
-        if (permGen <= 64) {
-            permGen = 64;
+        if (permGen <= 128) {
+            permGen = 128;
         }
 
         if (minMemory > maxMemory) {
